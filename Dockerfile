@@ -12,7 +12,6 @@ RUN apt-get update && \
 	python3-pip \
 	unixodbc-dev \
 	libaio-dev \
-	mysql-client \
 	apt-transport-https \
 	python3-setuptools && \
     rm -rf /var/lib/apt/lists/* && \
