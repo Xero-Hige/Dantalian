@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import os
 from moviepy.editor import *
+import argparse
 
 GIF_DURATION = 4.0
 
@@ -9,7 +10,7 @@ HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleW
 
 
 def download_video(url):
-    print("downloading video @ "+url)
+    print("downloading video @ " + url)
     page = requests.get(url, headers=HEADERS)
     tree = BeautifulSoup(page.content, 'html.parser')
     video = tree.find(lambda x: x.name == 'a' and x.has_attr('data-id'))
@@ -36,7 +37,7 @@ def compose_video_url(sub):
 
 def download_list_(category, page):
     path = "https://videos.pexels.com/search/{}?page={}&format=js".format(category, page)
-    print("Downloading: "+path)
+    print("Downloading: " + path)
     p = requests.get(path, headers=HEADERS)
     if p.status_code != 200:
         raise Exception("Error code {}".format(p.status_code))
@@ -47,13 +48,13 @@ def download_list_(category, page):
         download_video(compose_video_url(tag.get('href').split('"')[1][:-1]))
         with open("tags.csv", "a") as f:
             f.write("{},{}\n".format(category, tag.get('href').split("-")[-1]))
-    
+
 
 def download_list(category, page):
     if page != 1:
         download_list_(category, page)
     path = "https://videos.pexels.com/search/{}".format(category)
-    print("Downloading: "+path)
+    print("Downloading: " + path)
     p = requests.get(path, headers=HEADERS)
     if p.status_code != 200:
         raise Exception("Error code {}".format(p.status_code))
@@ -64,13 +65,15 @@ def download_list(category, page):
         download_video(compose_video_url(tag.get('href')))
         with open("tags.csv", "a") as f:
             f.write("{},{}\n".format(category, tag.get('href').split("-")[-1]))
-    
 
 
 if __name__ == "__main__":
-    #download_list("people", 1)
-    download_list("people", 2)
-    download_list("cat", 1)
-    download_list("cat", 2)
-    download_list("dog", 1)
-    download_list("dog", 2)
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument('--category', '-c', type=str)
+    parser.add_argument('--pages', '-p', type=int, default=1)
+
+    args = parser.parse_args()
+    for i in range(1, args.pages):
+        download_list(args.category, i)
