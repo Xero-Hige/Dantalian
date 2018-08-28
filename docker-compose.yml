@@ -34,3 +34,6 @@ services:
     env_file:
       - dantalian.env
 
+    volumes:
+      - ./images:/images
+

@@ -21,6 +21,7 @@ RUN pip3 install wheel --no-cache-dir && \
     pip3 install schedule --no-cache-dir && \
     pip3 install flask --no-cache-dir && \
     pip3 install flask-cors --no-cache-dir && \
+    pip3 install pyopenssl --no-cache-dir && \
     pip3 install gunicorn --no-cache-dir && \
     pip3 install python-dateutil --no-cache-dir && \
 #TODO: Check version
