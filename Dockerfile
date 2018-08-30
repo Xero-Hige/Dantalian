@@ -24,6 +24,12 @@ RUN pip3 install wheel --no-cache-dir && \
     pip3 install pyopenssl --no-cache-dir && \
     pip3 install gunicorn --no-cache-dir && \
     pip3 install python-dateutil --no-cache-dir && \
+    pip3 install bs4 --no-cache-dir && \
+    pip3 install lxml --no-cache-dir && \
+    pip3 install rq --no-cache-dir && \
+    pip3 install requests --no-cache-dir && \
+    pip3 install moviepy --no-cache-dir && \
+    pip3 install argparse --no-cache-dir && \
 #TODO: Check version
     pip3 install mysql-connector==2.1.4 --no-cache-dir && \
     export LANG=en_US.utf-8 && \
