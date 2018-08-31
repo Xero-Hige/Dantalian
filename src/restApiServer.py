@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 
-import rest_serving
+from rest_serving import rest_serving
 from rest_session import rest_session
 
 app = Flask(__name__)

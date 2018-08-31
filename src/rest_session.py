@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from handler_user import UserHandler
+from model import *
 from rest_shared import API_ROUTE, error_response
 
 rest_session = Blueprint('rest_session', __name__, template_folder='templates')
@@ -13,18 +13,13 @@ def create_user_post():
 
     new_user = request.json['username']
 
-    with UserHandler() as handler:
-        api_key = handler.add_user(new_user)
-        if api_key:
-            return jsonify({
+    api_key = user = Users(new_user)
+    if not api_key:
+        return error_response(400, "Already in use")
+    return jsonify({
                 'status': "Created",
                 'api_key': api_key
             })
-        else:
-            return error_response(400, "Already in use")
-
-    return error_response(500, "Internal server error.")
-
 
 @rest_session.route(API_ROUTE + 'users', methods=['DELETE'])
 def delete_user_post():
@@ -32,8 +27,6 @@ def delete_user_post():
         return error_response(400, "Missing username")
 
     del_user = request.json['username']
-
-    with UserHandler() as handler:
-        handler.delete_user(del_user)
+    Users.delete_user(del_user)
 
     return jsonify({'status': "Deleted"})

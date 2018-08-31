@@ -1,0 +1,4 @@
+adapter: mysql
+schema: dantalian
+user: test
+password: test

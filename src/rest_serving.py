@@ -2,7 +2,7 @@ from flask import Blueprint, send_from_directory
 
 from rest_shared import API_ROUTE
 
-rest_serving = Blueprint('rest_session', __name__, template_folder='templates')
+rest_serving = Blueprint('rest_serving', __name__, template_folder='templates')
 
 
 @rest_serving.route(API_ROUTE + "classified/<int:filename>", methods=['GET'])

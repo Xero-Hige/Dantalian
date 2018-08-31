@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from handler_user import UserHandler
+from model import *
 from rest_shared import API_ROUTE, error_response
 
 rest_classify = Blueprint('rest_classify', __name__, template_folder='templates')
@@ -15,11 +15,10 @@ def get_images():
     if not token:
         return error_response(400, "Missing api-key")
 
-    with UserHandler() as handler:
-        if not handler.user_exists(origin):
-            return error_response(404, "Unregistered")
-        if not handler.is_valid_token(origin, token):
-            return error_response(404, "Not registered or not valid key")
+    if not Users.exists(origin):
+        return error_response(401, "Unregistered")
+    if not Users.is_valid_token(origin, token):
+        return error_response(401, "Key is not valid!")
 
     response = {}
 
@@ -39,11 +38,10 @@ def classify_images():
     if not token:
         return error_response(400, "Missing api-key")
 
-    with UserHandler() as handler:
-        if not handler.user_exists(origin):
-            return error_response(404, "Unregistered")
-        if not handler.is_valid_token(origin, token):
-            return error_response(404, "Not registered or not valid key")
+    if not Users.exists(origin):
+        return error_response(401, "Unregistered")
+    if not Users.is_valid_token(origin, token):
+        return error_response(401, "Key is not valid!")
 
     images = request.json.get("images")
     tag = request.json.get("tag")
@@ -51,6 +49,7 @@ def classify_images():
     if not images:
         return error_response(400, "Bad request")
 
+    # TODO
     def valid_tags(tag, images):
         return True
 

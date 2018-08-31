@@ -17,16 +17,11 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean
 
-RUN pip3 install wheel --no-cache-dir && \
-    pip3 install schedule --no-cache-dir && \
-    pip3 install flask --no-cache-dir && \
-    pip3 install flask-cors --no-cache-dir && \
-    pip3 install pyopenssl --no-cache-dir && \
-    pip3 install gunicorn --no-cache-dir && \
-    pip3 install python-dateutil --no-cache-dir && \
-#TODO: Check version
-    pip3 install mysql-connector==2.1.4 --no-cache-dir && \
-    export LANG=en_US.utf-8 && \
+COPY requirements.txt /
+
+RUN pip3 install --trusted-host pypi.python.org -r /requirements.txt
+
+RUN export LANG=en_US.utf-8 && \
     export LC_ALL=en_US.utf-8
 
 WORKDIR /
