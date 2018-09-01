@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Boolean
 from sqlalchemy.orm import relationship
@@ -12,7 +13,20 @@ from sqlalchemy.sql.expression import select, exists
 
 EXPIRE_TIME = 60 * 4
 
+def get_engine():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    db_yml = os.path.join(dir_path, "db.yml")
+    with open(db_yml) as f:
+        db_config = yaml.load(f)
+    mysql_engine = create_engine('mysql+mysqlconnector://{0}:{1}@127.0.0.1:3306/{2}'.format(db_config["user"], db_config["password"],db_config["schema"]))
+    return mysql_engine
+
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind=get_engine()))
+
 Base = declarative_base()
+Base.query = db_session.query_property()
 
 class Users(Base):
     __tablename__ = 'users'
@@ -87,13 +101,8 @@ class Gif(Base):
     name = Column(String(128))
     tagged = Column(Boolean())
 
-def get_engine():
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    db_yml = os.path.join(dir_path, "db.yml")
-    with open(db_yml) as f:
-        db_config = yaml.load(f)
-    mysql_engine = create_engine('mysql+pymysql://{0}:{1}@127.0.0.1/{2}'.format(db_config["user"], db_config["password"],db_config["schema"]))
-    return mysql_engine
+def init_db():
+    Base.metadata.create_all(bind=engine)
 
 if __name__ == "__main__":
-    Base.metadata.create_all(get_engine())
+    Base.metadata.create_all(bind=get_engine())
