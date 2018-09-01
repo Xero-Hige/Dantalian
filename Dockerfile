@@ -30,3 +30,5 @@ COPY Dockerstart.sh /Dantalian/startscript.sh
 WORKDIR /Dantalian
 
 CMD ["bash","startscript.sh"]
+
+RUN python3 /Dantalian/model/model.py
