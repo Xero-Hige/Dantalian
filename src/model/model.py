@@ -92,7 +92,7 @@ def get_engine():
     db_yml = os.path.join(dir_path, "db.yml")
     with open(db_yml) as f:
         db_config = yaml.load(f)
-    mysql_engine = create_engine('mysql+pymysql://{0}:{1}@127.0.0.1/{2}'.format(db_config["user"], db_config["password"],db_config["schema"]))
+    mysql_engine = create_engine('mysql+mysqlconnector://{0}:{1}@mysql/{2}'.format(db_config["user"], db_config["password"],db_config["schema"]))
     return mysql_engine
 
 if __name__ == "__main__":
