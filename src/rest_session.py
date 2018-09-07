@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from model import Users
+from model.model import *
 from rest_shared import API_ROUTE, error_response
 
 rest_session = Blueprint('rest_session', __name__, template_folder='templates')

@@ -6,7 +6,8 @@ WORKDIR /
 RUN apt-get update && \
     apt-get install  -y --allow-unauthenticated --no-install-recommends build-essential && \
     apt-get update && \
-    apt-get install -y --allow-unauthenticated \
+    apt-get install -y --allow-unauthenticated &&\
+    apt-get install -y netcat-openbsd \
 	curl \
 	python3 \
 	python3-pip \
@@ -30,5 +31,3 @@ COPY Dockerstart.sh /Dantalian/startscript.sh
 WORKDIR /Dantalian
 
 CMD ["bash","startscript.sh"]
-
-RUN python3 /Dantalian/model/model.py

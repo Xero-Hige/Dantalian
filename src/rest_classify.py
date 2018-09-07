@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from model import *
+from model.model import *
 from rest_shared import API_ROUTE, error_response
 
 rest_classify = Blueprint('rest_classify', __name__, template_folder='templates')
