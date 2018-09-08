@@ -23,7 +23,6 @@ COPY requirements.txt /
 RUN pip3 install --trusted-host pypi.python.org -r /requirements.txt
 
 RUN export LANG=en_US.utf-8 && \
-    export LC_ALL=en_US.utf-8
 
 WORKDIR /
 COPY /src /Dantalian
