@@ -9,21 +9,21 @@ import datetime
 import hashlib
 import os
 import time
-from sqlalchemy.sql.expression import select, exists
+
 
 EXPIRE_TIME = 60 * 4
+
 
 def get_engine():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     db_yml = os.path.join(dir_path, "db.yml")
     with open(db_yml) as f:
         db_config = yaml.load(f)
-    mysql_engine = create_engine('mysql+pymysql://{0}:{1}@mysql/{2}'.format(db_config["user"], db_config["password"],db_config["schema"]))
+    mysql_engine = create_engine('mysql+pymysql://{0}:{1}@{2}/{3}'.format(db_config["user"], db_config["password"], db_config["host"], db_config["schema"]))
     return mysql_engine
 
 
-db_session = scoped_session(sessionmaker(autocommit=True,
-                                         autoflush=True,
+db_session = scoped_session(sessionmaker(autocommit=False,
                                          bind=get_engine()))
 
 
@@ -33,6 +33,7 @@ Base.query = db_session.query_property()
 
 class Users(Base):
     __tablename__ = 'users'
+    # I don't _actually_ need this but for sqlalchemy to stop complaining
     id = Column(Integer, nullable=False, primary_key=True, autoincrement=True)
     username = Column(String(45), nullable=False, index=True)
     userpass = Column(String(128))
@@ -54,31 +55,23 @@ class Users(Base):
         timestamp = datetime.datetime.fromtimestamp(ts) + datetime.timedelta(minutes=delta)
         return timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
-    def __get_token(self):
-        print(self.id, self.username, self.password, self.creation)
-        user, password, timestamp, userid = self.username, self.userpass, self.creation, self.id 
-        token_base = user + password + timestamp + userid
-        salt = str.encode(userid + timestamp)
-        encoded_token = str.encode(token_base)
-        hashed = hashlib.pbkdf2_hmac('sha512', encoded_token, salt, 1000)
-        hash_hex = binascii.hexlify(hashed)
-        return hash_hex.decode("ascii")
+    def __init__(self, username):
+        self.username = username
+        self.userpass = Users.__hash_password(username, username)
+        self.creation = Users.__get_timestamp()
 
-    def __init__(self,username):
+    @staticmethod
+    def create(username):
         if Users.exists(username):
             return None
-        self.username = username
-        self.password = Users.__hash_password(username, username)
-        self.creation = Users.__get_timestamp() 
-        print(self.id, self.username, self.password, self.creation)
-        #return self.__get_token()
-
-    def to_json(self):
-        return self.__dict__
+        user = Users(username)
+        db_session.add(user)
+        db_session.commit()
+        return user.__get_token()
 
     @staticmethod
     def is_valid_token(user, token):
-        users = Users.where(Users.username == user).get()
+        users = Users.where(Users.username == user).one()
         for user in users:
             return user.__get_token() == token
         return False
@@ -86,10 +79,20 @@ class Users(Base):
     @staticmethod
     def delete_user(user):
         Users.query.filter(Users.username == user).delete()
+        db_session.commit()
 
     @staticmethod
     def exists(user):
         return Users.query.filter(Users.username == user).count() != 0
+
+    def __get_token(self):
+        user, password, timestamp = self.username, self.userpass, self.creation.isoformat()
+        token_base = user + password + str(timestamp)
+        salt = str.encode(timestamp)
+        encoded_token = str.encode(token_base)
+        hashed = hashlib.pbkdf2_hmac('sha512', encoded_token, salt, 1000)
+        hash_hex = binascii.hexlify(hashed)
+        return hash_hex.decode("ascii")
 
 
 class Video(Base):
@@ -118,6 +121,5 @@ class Tag(Base):
     gif = relationship(Gif, backref=backref('gifs', uselist=True))
 
 
-#if __name__ == "__main__":
-    #print("Building model!")
-    #Base.metadata.create_all(bind=mysql_engine)|
+if __name__ == "__main__":
+    Base.metadata.create_all(bind=get_engine())

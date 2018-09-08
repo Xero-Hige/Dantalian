@@ -13,13 +13,14 @@ def create_user_post():
 
     new_user = request.json['username']
 
-    api_key = user = Users(new_user)
+    api_key = Users.create(new_user)
     if not api_key:
         return error_response(400, "Already in use")
     return jsonify({
-                'status': "Created",
-                'api_key': api_key
-            })
+        'status': "Created",
+        'api_key': api_key
+    })
+
 
 @rest_session.route(API_ROUTE + 'users', methods=['DELETE'])
 def delete_user_post():
@@ -30,3 +31,8 @@ def delete_user_post():
     Users.delete_user(del_user)
 
     return jsonify({'status': "Deleted"})
+
+
+@rest_session.route(API_ROUTE + 'users', methods=['GET'])
+def get_user():
+    return jsonify(Users.query.all())

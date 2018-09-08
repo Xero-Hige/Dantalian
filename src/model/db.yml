@@ -1,4 +1,11 @@
+# adapter: mysql
+# schema: dantalian
+# user: test
+# password: test
+# host: mysql
+
 adapter: mysql
 schema: dantalian
-user: test
-password: test
+user: nox
+password: LedZeppelin201&
+host: 127.0.0.1
