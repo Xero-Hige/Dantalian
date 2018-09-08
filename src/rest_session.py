@@ -8,6 +8,15 @@ rest_session = Blueprint('rest_session', __name__, template_folder='templates')
 
 @rest_session.route(API_ROUTE + 'users', methods=['POST'])
 def create_user_post():
+    """
+    Endpoint to create a new user
+
+    Receives:
+    - username: intended username
+
+    Returns:
+    - response with api_key value
+    """
     if not request.json or 'username' not in request.json:
         return error_response(400, "Missing username")
 
@@ -24,6 +33,15 @@ def create_user_post():
 
 @rest_session.route(API_ROUTE + 'users', methods=['DELETE'])
 def delete_user_post():
+    """
+    Endpoint to delete existing users
+
+    Receives:
+    - username: username to be deleted
+
+    Returns:
+    - response with status
+    """
     if not request.json or 'username' not in request.json:
         return error_response(400, "Missing username")
 
@@ -35,6 +53,17 @@ def delete_user_post():
 
 @rest_session.route(API_ROUTE + 'users/trust', methods=['POST'])
 def trust_user_post():
+    """
+    Endpoint to acknowledge a user as trusted
+
+    Receives:
+    - username: username to acknowledge as trusted
+    - api_key: the user's api_key
+    - secret_phrase: secret phrase issued by the system's admin
+
+    Returns:
+    - response with result value
+    """
     if not request.json or 'username' not in request.json:
         return error_response(400, "Missing username")
 
