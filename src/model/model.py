@@ -84,6 +84,7 @@ class Users(Base):
         user.trusted = True
         db_session.add(user)
         db_session.commit()
+        return True
 
     @staticmethod
     def is_valid_token(user, token):

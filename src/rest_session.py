@@ -33,6 +33,19 @@ def delete_user_post():
     return jsonify({'status': "Deleted"})
 
 
-@rest_session.route(API_ROUTE + 'users', methods=['GET'])
-def get_user():
-    return jsonify(Users.query.all())
+@rest_session.route(API_ROUTE + 'users/trust', methods=['POST'])
+def trust_user_post():
+    if not request.json or 'username' not in request.json:
+        return error_response(400, "Missing username")
+
+    if 'secret_phrase' not in request.json:
+        return error_response(400, 'Missing secret phrase')
+
+    if 'api_key' not in request.json:
+        return error_response(400, 'Missing api_key')
+
+    result = Users.acknowledge_trusted(request.json["username"],
+                                       request.json["api_key"],
+                                       request.json["secret_phrase"])
+
+    return jsonify({'result': result})
