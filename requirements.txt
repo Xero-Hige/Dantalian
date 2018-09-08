@@ -9,3 +9,5 @@ mysql-connector==2.1.4
 sqlalchemy
 pyyaml
 pymysql
+requests
+moviepy

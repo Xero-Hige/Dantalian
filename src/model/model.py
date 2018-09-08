@@ -22,6 +22,11 @@ def get_engine():
     mysql_engine = create_engine('mysql+pymysql://{0}:{1}@{2}/{3}'.format(db_config["user"], db_config["password"], db_config["host"], db_config["schema"]))
     return mysql_engine
 
+def trust_secret_matches(secret):
+    with open("trust_secret.yml", "r") as f:
+        secret_phrase = yaml.load(f)
+    return secret == secret_phrase["secret_phrase"]
+
 
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          bind=get_engine()))
@@ -33,11 +38,11 @@ Base.query = db_session.query_property()
 
 class Users(Base):
     __tablename__ = 'users'
-    # I don't _actually_ need this but for sqlalchemy to stop complaining
     id = Column(Integer, nullable=False, primary_key=True, autoincrement=True)
     username = Column(String(45), nullable=False, index=True)
     userpass = Column(String(128))
     creation = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    trusted = Column(Boolean(), default=False)
 
     @staticmethod
     def __hash_password(user, password):
@@ -70,6 +75,17 @@ class Users(Base):
         return user.__get_token()
 
     @staticmethod
+    def acknowledge_trusted(username, token, secret):
+        if not Users.is_valid_token(username, token):
+            return False
+        if not trust_secret_matches(secret):
+            return False
+        user = Users.query.filter(Users.username == user).one()
+        user.trusted = True
+        db_session.add(user)
+        db_session.commit()
+
+    @staticmethod
     def is_valid_token(user, token):
         users = Users.where(Users.username == user).one()
         for user in users:
@@ -99,26 +115,95 @@ class Video(Base):
     __tablename__ = "videos"
     id = Column(Integer, nullable=False, primary_key=True)
     name = Column(String(128))
+    url = Column(String(128))
+    category = Column(String(64))
+    creation = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    filename = Column(String(128))
+
+    def __init__(self, url, category, filename):
+        self.url = url
+        self.category = category
+        self.name = " ".join(url.split("/")[-1].split('-')[:-1])
+        self.filename = filename
+
+    @staticmethod
+    def create(url, category, filename):
+        if Video.exists(url):
+            return Video.filter(Video.url == url).get()
+        video = Video(url, category, filename)
+        db_session.add(video)
+        db_session.commit()
+        return video.id
+
+    @staticmethod
+    def exists(url):
+        return Video.query.filter(Video.url == url).count() != 0
 
 
 class Gif(Base):
     __tablename__ = "gifs"
     id = Column(Integer, nullable=False, primary_key=True, autoincrement=True)
-    name = Column(String(128))
-    tagged = Column(Boolean())
+    chunk = Column(Integer)
+    creation = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    filename = Column(String(128))
 
     video_id = Column(Integer, ForeignKey('videos.id'))
     video = relationship(Video, backref=backref('gifs', uselist=True))
+
+    def __init__(self, video_id, chunk, filename):
+        self.video_id = video_id
+        self.chunk = chunk
+        self.filename = filename
+
+    @staticmethod
+    def create(video_id, chunk, filename):
+        gif = Gif(video_id, chunk, filename)
+        db_session.add(gif)
+        db_session.commit()
+
+
+class TagText(Base):
+    __tablename__ = "tagtexts"
+    id = Column(Integer, nullable=False, primary_key=True, autoincrement=True)
+    text = Column(String(128))
+
+    def __init__(self, text):
+        self.text = text
+
+    @staticmethod
+    def create(text):
+        tagText = TagText(text)
+        db_session.add(tagText)
+        db_session.commit()
+        return tagText.id
 
 
 class Tag(Base):
     __tablename__ = "tags"
     id = Column(Integer, nullable=False, primary_key=True, autoincrement=True)
-    text = Column(String(128))
     result = Column(Boolean())
+
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship(Users, backref=backref('users', uselist=True))
 
     gif_id = Column(Integer, ForeignKey('gifs.id'))
     gif = relationship(Gif, backref=backref('gifs', uselist=True))
+
+    tagtext_id = Column(Integer, ForeignKey('tagtexts.id'))
+    tagtext = relationship(TagText, backref=backref('tagtexts', uselist=True))
+
+    def __init__(self, tagtext_id, gif_id, user_id, result):
+        self.tagtext_id = tagtext_id
+        self.gif_id = gif_id
+        self.user_id = user_id
+        self.result = result
+
+    @staticmethod
+    def create(tagtext_id, gif_id, user_id, result):
+        tag = Tag(tagtext_id, gif_id, user_id, result)
+        db_session.add(tag)
+        db_session.commit()
+        return tag.id
 
 
 if __name__ == "__main__":
