@@ -6,14 +6,16 @@ import argparse
 import time
 
 import sys
-sys.path.insert(0, "../")
-from model.model import *    # Replace "my_module" here with your module's name.
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
+from model.model import *
 sys.path.pop(0)
 
 
 GIF_DURATION = 4.0
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+
+BASE_DATA_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 def download_video(url, category):
@@ -28,13 +30,13 @@ def download_video(url, category):
 
     tree = BeautifulSoup(page.content, 'html.parser')
     video = tree.find(lambda x: x.name == 'a' and x.has_attr('data-id'))
-    filename = "data/videos/{}.mp4".format(video.get('data-id'))
+    filename = os.path.join(BASE_DATA_PATH, "data", "videos", "{}.mp4".format(video.get('data-id')))
     if not Video.exists(url):
         with open(filename, "wb") as f:
             vid = requests.get(video.get('href'), headers=HEADERS)
             f.write(vid.content)
         video_id = Video.create(url, category, filename)
-        base_gif = "data/gifs/{}_".format(video.get('data-id'))
+        base_gif = os.path.join(BASE_DATA_PATH, "data", "gifs", "{}_".format(video.get('data-id')))
         clip = VideoFileClip(filename)
         start = 0.0
         i = 1
@@ -73,7 +75,7 @@ def download_list(category, page):
     p = requests.get(path, headers=HEADERS)
 
     wait_time = 2
-    if page.status_code == 422:
+    if p.status_code == 422:
         time.sleep(wait_time)
         wait_time *= 2
         page = requests.get(url, headers=HEADERS)
@@ -95,5 +97,5 @@ if __name__ == "__main__":
     parser.add_argument('--pages', '-p', type=int, default=1)
 
     args = parser.parse_args()
-    for i in range(1, args.pages+1):
+    for i in range(1, args.pages + 1):
         download_list(args.category, i)

@@ -11,3 +11,4 @@ pyyaml
 pymysql
 requests
 moviepy
+bs4
