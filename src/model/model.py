@@ -9,7 +9,7 @@ import datetime
 import hashlib
 import os
 import time
-from  sqlalchemy.sql.expression import func, select
+from sqlalchemy.sql.expression import func, select
 
 EXPIRE_TIME = 60 * 4
 
@@ -21,6 +21,7 @@ def get_engine():
         db_config = yaml.load(f)
     mysql_engine = create_engine('mysql+pymysql://{0}:{1}@{2}/{3}'.format(db_config["user"], db_config["password"], db_config["host"], db_config["schema"]))
     return mysql_engine
+
 
 def trust_secret_matches(secret):
     with open("trust_secret.yml", "r") as f:
@@ -180,6 +181,11 @@ class Gif(Base):
     def get(idgif):
         return Gif.query.get(idgif)
 
+    def mark_tagged(self, tag):
+        self.classified = True
+        self.classification = tag
+        db_session.commit()
+
 
 class TagText(Base):
     __tablename__ = "tagtexts"
@@ -228,6 +234,7 @@ class Tag(Base):
     def trusted_tag():
         tag = Tag.query.filter(Tag.user.has(trusted=True)).order_by(func.rand()).first()
         return tag
+
 
 if __name__ == "__main__":
     Base.metadata.create_all(bind=get_engine())
