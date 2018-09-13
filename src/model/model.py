@@ -9,7 +9,7 @@ import datetime
 import hashlib
 import os
 import time
-from sqlalchemy.sql.expression import func, select
+from sqlalchemy.sql.expression import func
 
 EXPIRE_TIME = 60 * 4
 
@@ -81,7 +81,7 @@ class Users(Base):
             return False
         if not trust_secret_matches(secret):
             return False
-        user = Users.query.filter(Users.username == user).one()
+        user = Users.query.filter(Users.username == username).one()
         user.trusted = True
         db_session.add(user)
         db_session.commit()

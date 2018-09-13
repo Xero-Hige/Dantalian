@@ -1,4 +1,4 @@
-    from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request
 
 from model.model import *
 from rest_shared import API_ROUTE, error_response
