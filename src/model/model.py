@@ -9,7 +9,7 @@ import datetime
 import hashlib
 import os
 import time
-
+from  sqlalchemy.sql.expression import func, select
 
 EXPIRE_TIME = 60 * 4
 
@@ -140,6 +140,10 @@ class Video(Base):
     def exists(url):
         return Video.query.filter(Video.url == url).count() != 0
 
+    @staticmethod
+    def random():
+        return Video.query.order_by(func.rand()).first()
+
 
 class Gif(Base):
     __tablename__ = "gifs"
@@ -147,9 +151,14 @@ class Gif(Base):
     chunk = Column(Integer)
     creation = Column(DateTime, default=datetime.datetime.now, nullable=False)
     filename = Column(String(128))
+    classified = Column(Boolean(), default=False)
+    classification = Column(Boolean(), default=None, nullable=True)
 
     video_id = Column(Integer, ForeignKey('videos.id'))
     video = relationship(Video, backref=backref('gifs', uselist=True))
+
+    tag_id = Column(Integer, ForeignKey('tags.id'))
+    tags = relationship(Tag, backref=backref('tags', uselist=True))
 
     def __init__(self, video_id, chunk, filename):
         self.video_id = video_id
@@ -161,6 +170,15 @@ class Gif(Base):
         gif = Gif(video_id, chunk, filename)
         db_session.add(gif)
         db_session.commit()
+
+    @staticmethod
+    def random(amnt):
+        gifs = Gif.query.order_by(func.rand()).limit(amnt)
+        return [gif.id for gif in gifs]
+
+    @staticmethod
+    def get(idgif):
+        return Gif.query.get(idgif)
 
 
 class TagText(Base):
@@ -206,6 +224,10 @@ class Tag(Base):
         db_session.commit()
         return tag.id
 
+    @staticmethod
+    def trusted_tag():
+        tag = Tag.query.filter(Tag.user.has(trusted=True)).order_by(func.rand()).first()
+        return tag
 
 if __name__ == "__main__":
     Base.metadata.create_all(bind=get_engine())
