@@ -15,7 +15,6 @@ This project intends to provide an api to tag gifs with text. Possible use cases
 * run with `sh StartDocker.sh`
 
 # TODO
-* Add initialization script to load testing entities
 * Add tests on expected user entity behaviour
 * Add tests on expected image serving behaviour
 * Add tests on expected classification behaviour

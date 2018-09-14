@@ -131,7 +131,7 @@ class Video(Base):
     @staticmethod
     def create(url, category, filename):
         if Video.exists(url):
-            return Video.filter(Video.url == url).get()
+            return Video.query.filter(Video.url == url).one().id
         video = Video(url, category, filename)
         db_session.add(video)
         db_session.commit()
@@ -158,8 +158,7 @@ class Gif(Base):
     video_id = Column(Integer, ForeignKey('videos.id'))
     video = relationship(Video, backref=backref('gifs', uselist=True))
 
-    tag_id = Column(Integer, ForeignKey('tags.id'))
-    tags = relationship(Tag, backref=backref('tags', uselist=True))
+    tags = relationship("Tag", backref=backref('tags', uselist=True))
 
     def __init__(self, video_id, chunk, filename):
         self.video_id = video_id
@@ -171,6 +170,7 @@ class Gif(Base):
         gif = Gif(video_id, chunk, filename)
         db_session.add(gif)
         db_session.commit()
+        return gif.id
 
     @staticmethod
     def random(amnt):

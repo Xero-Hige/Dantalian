@@ -35,5 +35,4 @@ services:
       - dantalian.env
 
     volumes:
-      - ./images:/images
-
+      - ./src/bach/data:/images
