@@ -8,7 +8,7 @@ rest_videos = Blueprint('rest_videos', __name__, template_folder='templates')
 
 @rest_videos.route(API_ROUTE + 'video/random', methods=['GET'])
 def get_random_video():
-	token = request.headers.get("api_key")
+    token = request.headers.get("api_key")
     origin = request.environ.get("HTTP_ORIGIN")
 
     if not token:
@@ -29,7 +29,7 @@ def get_random_video():
 
 @rest_videos.route(API_ROUTE + 'video/<int:video_id>', methods=['GET'])
 def get_video(video_id):
-	token = request.headers.get("api_key")
+    token = request.headers.get("api_key")
     origin = request.environ.get("HTTP_ORIGIN")
 
     if not token:

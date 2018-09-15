@@ -66,7 +66,7 @@ def classify_images():
             if tag not in _d:
                 _d[tag] = 0
             _d[tag] += 1
-        v = sorted([v, k for k, v in _d.items()])[-1]
+        v = sorted([(v, k) for k, v in _d.items()])[-1]
         return v[1], v[0]
 
     def valid_tags(tags, text, images):
@@ -89,7 +89,7 @@ def classify_images():
                 if score >= MIN_TRESHOLD:
                     gif.mark_tagged(max_tag)
 
-    user = Users.query.get(Users.username=origin).one()
+    user = Users.query.filter(Users.username == origin).one()
     if valid_tags(tags, text, images):
         update_classification(text, images, tags, user.id)
         return jsonify({"Success": True})
