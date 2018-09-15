@@ -1,19 +1,21 @@
-from bs4 import BeautifulSoup
-import requests
-import os
-from moviepy.editor import *
 import argparse
-import time
-
+import os
 import sys
+
+import requests
+from bs4 import BeautifulSoup
+from moviepy.editor import *
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 from model.model import *
-sys.path.pop(0)
 
+sys.path.pop(0)
 
 GIF_DURATION = 4.0
 
-HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
+                  'Chrome/39.0.2171.95 Safari/537.36'}
 
 BASE_DATA_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -91,7 +93,7 @@ def download_list(category, page):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--category', '-c', type=str)
     parser.add_argument('--pages', '-p', type=int, default=1)

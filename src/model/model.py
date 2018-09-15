@@ -1,14 +1,13 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Boolean
-from sqlalchemy.orm import relationship, backref
-import yaml
 import binascii
 import datetime
 import hashlib
 import os
 import time
+
+import yaml
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import backref, relationship, scoped_session, sessionmaker
 from sqlalchemy.sql.expression import func
 
 EXPIRE_TIME = 60 * 4
@@ -19,7 +18,9 @@ def get_engine():
     db_yml = os.path.join(dir_path, "db.yml")
     with open(db_yml) as f:
         db_config = yaml.load(f)
-    mysql_engine = create_engine('mysql+pymysql://{0}:{1}@{2}/{3}'.format(db_config["user"], db_config["password"], db_config["host"], db_config["schema"]))
+    mysql_engine = create_engine(
+            'mysql+pymysql://{0}:{1}@{2}/{3}'.format(db_config["user"], db_config["password"], db_config["host"],
+                                                     db_config["schema"]))
     return mysql_engine
 
 
@@ -31,7 +32,6 @@ def trust_secret_matches(secret):
 
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          bind=get_engine()))
-
 
 Base = declarative_base()
 Base.query = db_session.query_property()
@@ -173,13 +173,13 @@ class Gif(Base):
         return gif.id
 
     @staticmethod
-    def random(amnt):
+    def random(amnt):  # FIXME: Dafuq?
         gifs = Gif.query.order_by(func.rand()).limit(amnt)
         return [gif.id for gif in gifs]
 
     @staticmethod
-    def get(idgif):
-        return Gif.query.get(idgif)
+    def get(gif_id):
+        return Gif.query.get(gif_id)
 
     def mark_tagged(self, tag):
         self.classified = True
@@ -197,10 +197,10 @@ class TagText(Base):
 
     @staticmethod
     def create(text):
-        tagText = TagText(text)
-        db_session.add(tagText)
+        tag_text = TagText(text)
+        db_session.add(tag_text)
         db_session.commit()
-        return tagText.id
+        return tag_text.id
 
 
 class Tag(Base):
@@ -224,8 +224,8 @@ class Tag(Base):
         self.result = result
 
     @staticmethod
-    def create(tagtext_id, gif_id, user_id, result):
-        tag = Tag(tagtext_id, gif_id, user_id, result)
+    def create(tag_text_id, gif_id, user_id, result):
+        tag = Tag(tag_text_id, gif_id, user_id, result)
         db_session.add(tag)
         db_session.commit()
         return tag.id

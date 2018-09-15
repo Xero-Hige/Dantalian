@@ -1,10 +1,9 @@
+from random import choice
+
 from flask import Blueprint, jsonify, request
 
 from model.model import *
 from rest_shared import API_ROUTE, error_response
-from sqlalchemy.sql.expression import func
-from random import choice
-
 
 MIN_TAGS = 5
 MIN_TRESHOLD = 0.7
@@ -40,6 +39,40 @@ def get_images():
     return jsonify(response)
 
 
+# TODO: Move anywhere else
+
+def get_max_tag(tags):
+    _d = {}
+    for tag in tags:
+        if tag not in _d:
+            _d[tag] = 0
+        _d[tag] += 1
+    v = sorted([(v, k) for k, v in _d.items()])[-1]
+    return v[1], v[0]
+
+
+def valid_tags(tags, text, images):
+    #tagtext = TagText.query.filter(TagText.text == text).one()
+    for image, tag in zip(images, tags):
+        gif = Gif.query.get(image)
+        if gif.classified:
+            if gif.classification != tag:
+                return False
+    return True
+
+
+def update_classification(text, images, tags, user_id):
+    tagtext = TagText.query.filter(TagText.text == text).one()
+    for image, tag in zip(images, tags):
+        gif = Gif.query.get(image)
+        if not gif.classified:
+            Tag.create(tagtext.id, gif.id, user_id, tag)
+        if len(gif.tags) >= MIN_TAGS:
+            max_tag, score = get_max_tag(gif.tags)
+            if score >= MIN_TRESHOLD:
+                gif.mark_tagged(max_tag)
+
+
 @rest_classify.route(API_ROUTE + 'classify', methods=['POST'])
 def classify_images():
     token = request.headers.get("api_key")
@@ -59,35 +92,6 @@ def classify_images():
 
     if not images:
         return error_response(400, "Bad request")
-
-    def max_tag(tags):
-        _d = {}
-        for tag in tags:
-            if tag not in _d:
-                _d[tag] = 0
-            _d[tag] += 1
-        v = sorted([(v, k) for k, v in _d.items()])[-1]
-        return v[1], v[0]
-
-    def valid_tags(tags, text, images):
-        tagtext = TagText.query.filter(TagText.text == text).one()
-        for image, tag in zip(images, tags):
-            gif = Gif.query.get(image)
-            if gif.classified:
-                if gif.classification != tag:
-                    return False
-        return True
-
-    def update_classification(text, images, tags, user_id):
-        tagtext = TagText.query.filter(TagText.text == text).one()
-        for image, tag in zip(images, tags):
-            gif = Gif.query.get(image)
-            if not gif.classified:
-                Tag.create(tagtext.id, gif.id, user_id, tag)
-            if len(gif.tags) >= MIN_TAGS:
-                max_tag, score = max_tag(gif.tags)
-                if score >= MIN_TRESHOLD:
-                    gif.mark_tagged(max_tag)
 
     user = Users.query.filter(Users.username == origin).one()
     if valid_tags(tags, text, images):

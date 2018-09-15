@@ -1,11 +1,12 @@
-from model import *
+from model.model import Gif, Tag, TagText, Users, Video
 
 tagtext1 = TagText.create("personas")
 print("tagtext1 id is {}".format(tagtext1))
 tagtext2 = TagText.create("perros")
 print("tagtext2 id is {}".format(tagtext2))
 
-video1_id = Video.create('https://videos.pexels.com/videos/blurry-video-of-people-working-853789', 'people', '/images/videos/853789.mp4')
+video1_id = Video.create('https://videos.pexels.com/videos/blurry-video-of-people-working-853789', 'people',
+                         '/images/videos/853789.mp4')
 print("video id is {}".format(video1_id))
 
 gif1 = Gif.create(video1_id, 1, '/images/gifs/853789_1.gif')
