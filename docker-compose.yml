@@ -13,18 +13,25 @@ services:
     volumes:
       - ./setup_scripts/database.sql:/docker-entrypoint-initdb.d/database.sql
 
-  postgres:
-    image: postgres:alpine
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: hige
-      POSTGRES_USER: hige
+  users_db:
+    image: mysql:5.7
 
-  dantalian-rest:
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      MYSQL_DATABASE: dantalian
+
+    volumes:
+      - ./setup_scripts/database.sql:/docker-entrypoint-initdb.d/database.sql
+
+
+  rest_server:
     restart: always
     build: .
     links:
       - mysql
+      - users_db
 
     ports:
       - "8000:8000"
