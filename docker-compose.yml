@@ -43,3 +43,4 @@ services:
 
     volumes:
       - ./src/bach/data:/images
+
