@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-sleep 4
+sleep 20
 python3 model/model.py
 #python3 bach/pexels.py --category people --pages 1
 python3 model/devenv_setup.py

@@ -89,15 +89,19 @@ class Users(Base):
 
     @staticmethod
     def is_valid_token(user, token):
-        users = Users.where(Users.username == user).one()
-        for user in users:
-            return user.__get_token() == token
-        return False
+        user = Users.query.filter(Users.username == user).one()
+        return user.__get_token() == token
 
     @staticmethod
     def delete_user(user):
         Users.query.filter(Users.username == user).delete()
         db_session.commit()
+
+    @staticmethod
+    def get_id(username, token):
+        if not Users.is_valid_token(username, token):
+            return None
+        return Users.query.filter(Users.username == username).one().id
 
     @staticmethod
     def exists(user):
