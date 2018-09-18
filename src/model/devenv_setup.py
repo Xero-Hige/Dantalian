@@ -1,6 +1,6 @@
 from model import Gif, Tag, TagText, Users, Video
 
-if not Users.create("test_app"):
+if not Users.exists("test_app"):
     tagtext1 = TagText.create("personas")
     print("tagtext1 id is {}".format(tagtext1))
     tagtext2 = TagText.create("perros")
