@@ -1,0 +1,21 @@
+sudo: required
+
+language: python
+
+env:
+  - TRAVIS=true
+
+python:
+  - 3.6
+
+install:
+  - pip3 install codecov
+
+services:
+  - docker
+
+script:
+    - ./StartDocker.sh
+
+after_success:
+    - cd test_results && codecov
