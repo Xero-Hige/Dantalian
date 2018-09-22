@@ -20,12 +20,12 @@ RUN apt-get update && \
 
 COPY requirements.txt /
 
+RUN pip3 install --trusted-host pypi.python.org -r requirements.txt --no-cache-dir
+
 #FIXME: DO NOT PUSH THIS ON MASTER
 RUN pip3 install coverage --no-cache-dir && \
-    pip3 install requests --no-cache-dir && \
+    pip3 install requests --no-cache-dir
 #FIXME: REMOVE
-
-RUN pip3 install --trusted-host pypi.python.org -r requirements.txt --no-cache-dir
 
 RUN export LANG=en_US.utf-8
 
