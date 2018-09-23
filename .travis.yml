@@ -17,5 +17,6 @@ services:
 script:
     - ./StartDocker.sh
     - cat ./test_results/build_success
+    
 after_success:
     - cd test_results && codecov
