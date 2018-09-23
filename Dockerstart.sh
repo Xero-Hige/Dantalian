@@ -12,6 +12,7 @@ sleep 10
 rm -r /coverage/*
 coverage run ./restApiServer.py -R &
 cd ../Testing
+rm -f ./build_success
 rm -f ./test_results
 bash run_curl_tests.sh >> ./test_results
 STATUS=$?
@@ -27,5 +28,12 @@ else
     coverage3 report -m
     grep -e "- ERROR" ../Testing/test_results
 fi
+if [$STATUS]
+then
+    echo "$STATUS"
+else
+    touch ./build_success
+fi
 exit $STATUS
+
 #FIXME: REMOVE
