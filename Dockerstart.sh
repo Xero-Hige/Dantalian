@@ -11,13 +11,14 @@ sleep 10
 #FIXME: DO NOT PUSH THIS ON MASTER
 rm -rf /coverage/*
 coverage run ./restApiServer.py -R &
-cd ../Testing
+cd /Testing
 rm -f ./build_success
 rm -f ./test_results
 bash run_curl_tests.sh >> ./test_results
 STATUS=$?
-sleep 5
-cd ../Dantalian
+ls
+cd /Dantalian
+ls
 coverage3 combine
 if [ "$TRAVIS" = "" ]
 then
