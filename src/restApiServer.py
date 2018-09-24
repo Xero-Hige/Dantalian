@@ -28,9 +28,11 @@ def shutdown():
     if func is None:  # pragma: no cover
         raise RuntimeError('Not running with the Werkzeug Server')  # pragma: no cover
     func()
+    print("SHUTDOWN WAIT")
     return 'Server shutting down...'
 
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
+    print("SHUTDOWN WAIT")
 # FIXME: REMOVE
