@@ -9,7 +9,7 @@ python3 model/devenv_setup.py
 sleep 10
 
 #FIXME: DO NOT PUSH THIS ON MASTER
-rm -r /coverage/*
+rm -rf /coverage/*
 coverage run ./restApiServer.py -R &
 cd ../Testing
 rm -f ./build_success
