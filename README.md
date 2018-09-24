@@ -1,4 +1,6 @@
 # Dantalian (TESTING BRANCH)
+[![Build Status](https://travis-ci.org/Xero-Hige/Dantalian.svg?branch=testing)](https://travis-ci.org/Xero-Hige/Dantalian)
+
 This project intends to provide an api to tag gifs with text. Possible use cases include creating a captcha for tagged-gifs corpus building.
 
 ## Requirements
