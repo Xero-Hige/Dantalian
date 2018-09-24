@@ -16,6 +16,8 @@ rm -f ./build_success
 rm -f ./test_results
 bash run_curl_tests.sh >> ./test_results
 STATUS=$?
+sleep 5
+cd ../Dantalian
 coverage3 combine
 if [ "$TRAVIS" = "" ]
 then
