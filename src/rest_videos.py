@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, send_file
-
+from flask import current_app
 from model.model import *
 from rest_shared import API_ROUTE, error_response
 
@@ -9,6 +9,7 @@ rest_videos = Blueprint('rest_videos', __name__, template_folder='templates')
 @rest_videos.route(API_ROUTE + 'video/random', methods=['GET'])
 def get_random_video():
     token = request.headers.get("api_key")
+    #origin = request.headers.get("origin")
     origin = request.environ.get("HTTP_ORIGIN")
 
     if not token:

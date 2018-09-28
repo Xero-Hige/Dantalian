@@ -20,7 +20,7 @@ def create_user_post():
     if not request.json or 'username' not in request.json:
         return error_response(400, "Missing username")
 
-    new_user = request.json['username']
+    new_user = request.get_json()['username']
 
     api_key = Users.create(new_user)
     if not api_key:

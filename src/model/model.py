@@ -149,6 +149,10 @@ class Video(Base):
     def random():
         return Video.query.order_by(func.rand()).first()
 
+    @staticmethod
+    def get_or_none(id):
+        return Video.query.filter(Video.id == id).one()
+
 
 class Gif(Base):
     __tablename__ = "gifs"
