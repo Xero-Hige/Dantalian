@@ -1,17 +1,18 @@
 from flask import Flask, request
 from flask_cors import CORS
 
-from rest_classify import rest_classify
-from rest_serving import rest_serving
+#from rest_classify import rest_classify
+#from rest_serving import rest_serving
 from rest_session import rest_session
 from rest_shared import API_ROUTE
-from rest_videos import rest_videos
+#from rest_videos import rest_videos
+
 
 app = Flask(__name__)
 app.register_blueprint(rest_session)
-app.register_blueprint(rest_serving)
-app.register_blueprint(rest_videos)
-app.register_blueprint(rest_classify)
+#app.register_blueprint(rest_serving)
+#app.register_blueprint(rest_videos)
+#app.register_blueprint(rest_classify)
 
 CORS(app)
 

@@ -4,7 +4,7 @@ from printing_functions import print_code_test, print_success
 
 
 def no_json(test_name):
-    url = BASE_URL + "users/trust"
+    url = BASE_URL + "users"
     header = BASE_HEADER.copy()
 
     req = requests.post(url, headers=header)

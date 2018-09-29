@@ -2,11 +2,11 @@
 
 set -e
 sleep 20
-python3 model/model.py
+#python3 model/model.py
 #python3 bach/pexels.py --category people --pages 1
-python3 model/devenv_setup.py
+#python3 model/devenv_setup.py
 
-sleep 10
+#sleep 10
 
 #FIXME: DO NOT PUSH THIS ON MASTER
 rm -rf /coverage/*
