@@ -39,7 +39,7 @@ def get_images():
     return jsonify(response)
 
 
-# TODO: Move anywhere else
+# FIXME: Move anywhere else
 
 def get_max_tag(tags):
     _d = {}
