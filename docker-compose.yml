@@ -13,13 +13,6 @@ services:
     volumes:
       - ./setup_scripts/database.sql:/docker-entrypoint-initdb.d/database.sql
 
-  postgres:
-    image: postgres:alpine
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: hige
-      POSTGRES_USER: hige
-
   dantalian-rest:
     restart: always
     build: .
@@ -36,4 +29,4 @@ services:
 
     volumes:
       - ./images:/images
-
+      - ./testresults:/coverage

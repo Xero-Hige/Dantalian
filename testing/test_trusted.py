@@ -4,12 +4,11 @@ from printing_functions import print_code_test, print_success
 
 
 def no_json(test_name):
-    url = BASE_URL + "users"
+    url = BASE_URL + "status"
     header = BASE_HEADER.copy()
 
-    req = requests.post(url, headers=header)
-
-    print_code_test(test_name, req.status_code, 400)
+    req = requests.get(url, headers=header)
+    print_code_test(test_name, req.status_code, 200)
     print_success(test_name)
 
 
